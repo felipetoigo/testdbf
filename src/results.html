@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dotabuff Stats</title>
+    <style>
+        table {
+            border-collapse: collapse;
+            width: 50%;
+            margin: auto;
+        }
+        th, td {
+            border: 1px solid black;
+            padding: 8px;
+            text-align: center;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    <h1>Dotabuff Stats</h1>
+    <table>
+        <tr>
+            <th>Category</th>
+            <th>Count</th>
+        </tr>
+        <tr>
+            <td>Wins</td>
+            <td id="wins">0</td>
+        </tr>
+        <tr>
+            <td>Losses</td>
+            <td id="losses">0</td>
+        </tr>
+        <tr>
+            <td>Unknown</td>
+            <td id="unknown">0</td>
+        </tr>
+    </table>
+
+    <script type="module">
+        // Import the GameStats class from the dotabuffStrat module
+        import { GameStats } from './dotabuffStrat.js';
+
+        // Function to update the counts in the HTML table
+        function updateTableCounts(gameStats) {
+            // Get the table cells for wins, losses, and unknown registers
+            const winsCell = document.getElementById('wins');
+            const lossesCell = document.getElementById('losses');
+            const unknownCell = document.getElementById('unknown');
+
+            // Update the counts in the table
+            winsCell.textContent = gameStats.getWonCount().toString();
+            lossesCell.textContent = gameStats.getLostCount().toString();
+            unknownCell.textContent = gameStats.getUnknownCount().toString();
+        }
+
+        // Wait for the DOM content to be fully loaded
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Instantiate the GameStats class with the data
+            const gameStats = new GameStats(allHeroData);
+
+            // Update the counts in the HTML table
+            updateTableCounts(gameStats);
+        });
+    </script>
+</body>
+</html>

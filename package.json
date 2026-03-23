@@ -1,0 +1,8 @@
+{
+  "dependencies": {
+    "playwright": "^1.41.2"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.19"
+  }
+}
