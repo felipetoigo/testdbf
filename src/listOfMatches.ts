@@ -16,12 +16,19 @@ import { chromium } from 'playwright';
   // Iterate through each page
   for (let pageNumber = 1; pageNumber <= 2; pageNumber++) {
     // Navigate to the Dotabuff matches overview page for the specified player
-    await page.goto(`https://www.dotabuff.com/players/97758803/matches?enhance=overview&page=${pageNumber}`);
-    await page.waitForLoadState('networkidle');
+    await page.goto(`https://www.dotabuff.com/players/97758803/matches?enhance=overview&page=${pageNumber}`, {
+      waitUntil: 'domcontentloaded',
+      timeout: 60000 // 60 segundos
+    });
     await page.waitForTimeout(2000); // Espera de 2 segundos
 
-    // Wait for the page to load completely
-    await page.waitForLoadState('networkidle');
+    // Wait for the table to be visible
+    try {
+      await page.waitForSelector('tbody > tr', { timeout: 10000 });
+    } catch (e) {
+      console.log(`Warning: Could not find table on page ${pageNumber}`);
+      continue;
+    }
 
     // Extract data from the page
     const rows = await page.$$('tbody > tr:not(:first-child)');
