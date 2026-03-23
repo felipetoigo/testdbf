@@ -105,7 +105,10 @@ exports.HeroStats = HeroStats;
     var browser, page, allHeroData, pageNumber, rows, _i, rows_1, row, _a, heroName, result, skillBase, gameStats, heroStats, sortedHeroCounts, _b, sortedHeroCounts_1, _c, heroName, counts, won, lost, total;
     return __generator(this, function (_d) {
         switch (_d.label) {
-            case 0: return [4 /*yield*/, playwright_1.chromium.launch({ headless: false })];
+            case 0: return [4 /*yield*/, playwright_1.chromium.launch({
+                    headless: process.env.CI === 'true' ||
+                        ['1', 'true', 'yes'].indexOf(String(process.env.HEADLESS || '').toLowerCase()) !== -1
+                })];
             case 1:
                 browser = _d.sent();
                 return [4 /*yield*/, browser.newPage()];

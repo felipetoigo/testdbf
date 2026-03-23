@@ -1,4 +1,5 @@
 import { chromium } from 'playwright';
+import { chromiumLaunchOptions } from './chromiumLaunchOptions';
 
 export class GameStats {
     private wonCount: number = 0;
@@ -65,8 +66,7 @@ export class HeroStats {
 }
 
 (async () => {
-    // Launch the browser in non-headless mode
-    const browser = await chromium.launch({ headless: false });
+    const browser = await chromium.launch(chromiumLaunchOptions());
 
     // Create a new page
     const page = await browser.newPage();
@@ -121,11 +121,9 @@ export class HeroStats {
     console.log('Hero Counts:');
     const sortedHeroCounts = Object.entries(heroStats.getHeroCounts()).sort((a, b) => b[1].total - a[1].total);
     for (const [heroName, counts] of sortedHeroCounts) {
-    const { won, lost, total } = counts;
-    console.log(`${heroName}: ${total} games (Won: ${won}, Lost: ${lost})`);
-}
+        const { won, lost, total } = counts;
+        console.log(`${heroName}: ${total} games (Won: ${won}, Lost: ${lost})`);
+    }
 
-
-    // Close the browser
     await browser.close();
 })();

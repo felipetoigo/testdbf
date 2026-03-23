@@ -52,15 +52,40 @@ On Windows, if the browser fails to start, install the **Microsoft Visual C++ Re
 
 ### 6. Run the TypeScript scripts
 
-The repo does not pin a single “run” script in `package.json`. The usual way is to execute TypeScript with **`tsx`** (no global install required):
+From the project folder (after `npm install`, which includes `tsx`):
+
+```bash
+npm run matches
+```
+
+or:
+
+```bash
+npm run strat
+```
+
+You can also run files directly:
 
 ```bash
 npx tsx src/listOfMatches.ts
+npx tsx src/dotabuffStrat.ts
 ```
 
-The first time, `npx` may download `tsx`; that is normal.
+**Headless mode (important on Windows without a normal desktop):** By default the scripts open a visible Chromium window. On some Windows setups (remote server, certain CI, or no GPU), that can fail or hang. Run headless instead:
 
-**Headless vs visible browser:** `listOfMatches.ts` launches Chromium with `headless: false` by default, so a browser window should open on Windows. If you run in an environment without a desktop (or you prefer no window), change `headless` to `true` in the script.
+**Command Prompt:**
+
+```bat
+set HEADLESS=1&& npm run matches
+```
+
+**PowerShell:**
+
+```powershell
+$env:HEADLESS = "1"; npm run matches
+```
+
+`CI=true` also forces headless (same as many CI systems).
 
 ### Other files
 
@@ -69,13 +94,14 @@ The first time, `npx` may download `tsx`; that is normal.
 
 ### Build with webpack (optional)
 
-If you use the Webpack setup:
+Install webpack first (it is not a default dependency), then from the project root:
 
 ```bash
+npm install -D webpack webpack-cli
 npx webpack
 ```
 
-Output is configured for `./dist` per `tsconfig.json` / `webpack.config.js` (adjust as your local webpack config expects).
+`webpack.config.js` points at `src/dotabuffStrat.js` using `path.join`, so it works the same on Windows and macOS regardless of path separators.
 
 ## Troubleshooting
 
@@ -84,6 +110,7 @@ Output is configured for `./dist` per `tsconfig.json` / `webpack.config.js` (adj
 | `Executable doesn't exist` / missing browser | Run `npx playwright install chromium` again. |
 | `Permission denied` when cloning/pushing | Use HTTPS and a GitHub **Personal Access Token**, or set up **SSH keys** on the new PC. |
 | Script runs but hero data is empty or “unknown” | Dotabuff may have changed the page or blocked automation; selectors in the script may need updating. |
+| Browser fails to open or crashes on Windows | Set `HEADLESS=1` (see above) or install the **Visual C++ Redistributable**; avoid running as Administrator unless needed. |
 
 ## License
 

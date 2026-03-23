@@ -1,8 +1,8 @@
 import { chromium } from 'playwright';
+import { chromiumLaunchOptions } from './chromiumLaunchOptions';
 
 (async () => {
-  // Launch the browser in non-headless mode
-  const browser = await chromium.launch({ headless: false });
+  const browser = await chromium.launch(chromiumLaunchOptions());
 
   // Create a new page
   const page = await browser.newPage();
@@ -18,13 +18,12 @@ import { chromium } from 'playwright';
     // Navigate to the Dotabuff matches overview page for the specified player
     await page.goto(`https://www.dotabuff.com/players/97758803/matches?enhance=overview&page=${pageNumber}`);
     await page.waitForLoadState('networkidle');
-    await page.waitForTimeout(2000); // Espera de 2 segundos
+    await new Promise((r) => setTimeout(r, 2000));
 
-    // Wait for the page to load completely
     await page.waitForLoadState('networkidle');
 
     // Extract data from the page
-    const rows = await page.$$('tbody > tr:not(:first-child)');
+    const rows = await page.$$('tbody > tr:not(:first-child)'); 
 
     for (const row of rows) {
       const [heroName, result, skillBase] = await row.evaluate(row => {
