@@ -1,8 +1,29 @@
 {
+  "name": "testdbf",
+  "version": "1.0.0",
+  "description": "Dotabuff match analyzer - Coleta estatísticas de partidas do Dotabuff usando Playwright",
+  "main": "src/listOfMatches.ts",
+  "scripts": {
+    "start": "npx tsx src/listOfMatches.ts",
+    "clean": "rm -rf src/temp_profile/ && rm -f *.png",
+    "clean:windows": "if exist src\\temp_profile rmdir /s /q src\\temp_profile && del *.png 2>nul",
+    "clean:all": "npm run clean:windows && echo ✅ Arquivos temporários removidos!",
+    "dev": "npx tsx watch src/listOfMatches.ts"
+  },
+  "keywords": [
+    "dotabuff",
+    "playwright",
+    "dota2",
+    "automation"
+  ],
+  "author": "Felipe",
+  "license": "ISC",
   "dependencies": {
     "playwright": "^1.41.2"
   },
   "devDependencies": {
-    "@types/node": "^20.11.19"
+    "@types/node": "^20.11.19",
+    "tsx": "^4.7.0",
+    "typescript": "^5.3.3"
   }
 }
