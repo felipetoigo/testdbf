@@ -57,10 +57,13 @@ const CHROME_PATH = 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe'
     const allHeroData: Array<[string, string, string]> = [];
     const heroCounts: Record<string, { won: number, lost: number, total: number }> = {};
     
+    // Definir quantas páginas processar (você pode aumentar este número)
+    const TOTAL_PAGES = 5; // Mude para quantas páginas quiser processar
+    
     // Processar páginas
-    for (let pageNumber = 1; pageNumber <= 2; pageNumber++) {
+    for (let pageNumber = 1; pageNumber <= TOTAL_PAGES; pageNumber++) {
       const targetUrl = `https://www.dotabuff.com/players/97758803/matches?enhance=overview&page=${pageNumber}`;
-      console.log(`\n🌐 Acessando página ${pageNumber}...`);
+      console.log(`\n🌐 Acessando página ${pageNumber} de ${TOTAL_PAGES}...`);
       
       try {
         // Navegar para a URL
@@ -115,19 +118,30 @@ const CHROME_PATH = 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe'
         });
         
         if (!tableExists) {
-          console.log('❌ Tabela não encontrada!');
+          console.log(`❌ Tabela não encontrada na página ${pageNumber}!`);
           console.log('📄 Conteúdo da página (primeiros 500 caracteres):');
           const content = await page.evaluate(() => document.body.innerText.substring(0, 500));
           console.log(content);
           
           // Salvar screenshot para debug
           await page.screenshot({ path: `no_table_${pageNumber}.png` });
+          
+          // Se não encontrou tabela e não é a primeira página, pode ser que não haja mais partidas
+          if (pageNumber > 1) {
+            console.log('📊 Possivelmente não há mais partidas para carregar.');
+            break; // Sai do loop se não encontrar mais partidas
+          }
           continue;
         }
         
         // Extrair dados
         const rows = await page.$$('tbody > tr:not(:first-child)');
-        console.log(`✅ Encontradas ${rows.length} partidas`);
+        console.log(`✅ Encontradas ${rows.length} partidas na página ${pageNumber}`);
+        
+        if (rows.length === 0) {
+          console.log(`📊 Nenhuma partida encontrada na página ${pageNumber}. Finalizando...`);
+          break;
+        }
         
         for (const row of rows) {
           try {
@@ -165,17 +179,26 @@ const CHROME_PATH = 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe'
           }
         }
         
+        // Salvar progresso parcial
+        console.log(`📊 Progresso: ${allHeroData.length} partidas coletadas até agora`);
+        
       } catch (error) {
         console.error(`❌ Erro na página ${pageNumber}:`, error.message);
         console.log('📸 Salvando screenshot de erro...');
         await page.screenshot({ path: `error_${pageNumber}.png` });
+        
+        // Se erro na página 2+, pode ser que não haja mais páginas
+        if (pageNumber > 1) {
+          console.log('📊 Possivelmente não há mais páginas para carregar.');
+          break;
+        }
       }
     }
     
     // Exibir resultados
-    console.log('\n' + '='.repeat(50));
+    console.log('\n' + '='.repeat(60));
     console.log('📊 RESULTADOS FINAIS');
-    console.log('='.repeat(50));
+    console.log('='.repeat(60));
     
     if (allHeroData.length === 0) {
       console.log('❌ Nenhuma partida foi processada!');
@@ -190,12 +213,14 @@ const CHROME_PATH = 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe'
       const sortedHeroCounts = Object.entries(heroCounts)
         .sort(([, a], [, b]) => b.total - a.total);
       
-      console.log('\n🏆 TOP 10 HEROIS:');
+      console.log('\n🏆 TOP 10 HEROIS MAIS JOGADOS:');
+      console.log('-'.repeat(50));
       for (const [heroName, counts] of sortedHeroCounts.slice(0, 10)) {
         const winRate = counts.total > 0 ? Math.round((counts.won / counts.total) * 100) : 0;
-        console.log(`${heroName}: ${counts.total} jogos (${counts.won}V/${counts.lost}D - ${winRate}%)`);
+        console.log(`${heroName.padEnd(20)} ${counts.total.toString().padStart(3)} jogos (${counts.won}V/${counts.lost}D - ${winRate}%)`);
       }
       
+      // Estatísticas gerais
       let wonCount = 0, lostCount = 0, unknownCount = 0;
       for (const [, , skillBase] of allHeroData) {
         if (skillBase === 'won') wonCount++;
@@ -204,13 +229,27 @@ const CHROME_PATH = 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe'
       }
       
       console.log('\n📈 ESTATÍSTICAS GERAIS:');
-      console.log(`✅ Vitórias: ${wonCount}`);
-      console.log(`❌ Derrotas: ${lostCount}`);
+      console.log('-'.repeat(30));
+      console.log(`✅ Vitórias:  ${wonCount}`);
+      console.log(`❌ Derrotas:  ${lostCount}`);
       console.log(`❓ Desconhecidos: ${unknownCount}`);
       console.log(`📊 Taxa de vitória: ${allHeroData.length > 0 ? Math.round((wonCount / allHeroData.length) * 100) : 0}%`);
+      
+      // Mostrar heróis com maior taxa de vitória (mínimo 5 jogos)
+      console.log('\n🏅 MELHORES TAXAS DE VITÓRIA (mín. 5 jogos):');
+      console.log('-'.repeat(50));
+      const topWinRate = sortedHeroCounts
+        .filter(([, counts]) => counts.total >= 5)
+        .sort(([, a], [, b]) => (b.won / b.total) - (a.won / a.total))
+        .slice(0, 5);
+      
+      for (const [heroName, counts] of topWinRate) {
+        const winRate = Math.round((counts.won / counts.total) * 100);
+        console.log(`${heroName.padEnd(20)} ${winRate}% (${counts.won}V/${counts.lost}D)`);
+      }
     }
     
-    console.log('\n💡 Pressione Ctrl+C para fechar.');
+    console.log('\n💡 Pressione Ctrl+C para fechar o navegador.');
     await new Promise(() => {});
     
   } catch (error) {

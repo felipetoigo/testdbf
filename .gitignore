@@ -1,3 +1,4 @@
+# Node
 node_modules/
 dist/
 .DS_Store
@@ -6,3 +7,50 @@ dist/
 .env.*
 playwright-report/
 test-results/
+
+# Perfil temporário do Playwright
+echo "# Perfil temporário do Playwright
+src/temp_profile/
+temp_profile/
+
+# Screenshots de debug
+*.png
+*.jpg
+*.jpeg
+security_*.png
+no_table_*.png
+error_*.png
+debug_*.png
+
+# Arquivos de log
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Diretórios de dependências
+node_modules/
+package-lock.json
+yarn.lock
+
+# Arquivos de build
+dist/
+build/
+*.tsbuildinfo
+
+# Arquivos do sistema
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Arquivos de ambiente
+.env
+.env.local
+.env.*.local
+
+# IDE e editores
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
