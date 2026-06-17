@@ -58,7 +58,7 @@ const CHROME_PATH = 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe'
     const heroCounts: Record<string, { won: number, lost: number, total: number }> = {};
     
     // Definir quantas páginas processar (você pode aumentar este número)
-    const TOTAL_PAGES = 5; // Mude para quantas páginas quiser processar
+    const TOTAL_PAGES = 3; // Mude para quantas páginas quiser processar
     
     // Processar páginas
     for (let pageNumber = 1; pageNumber <= TOTAL_PAGES; pageNumber++) {
